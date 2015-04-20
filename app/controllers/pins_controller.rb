@@ -21,24 +21,31 @@ class PinsController < ApplicationController
     else
       render 'new'
     end
+  end
 
     def edit
-
     end
 
     def update
-      if @pin.update(pin_params)
-        redirect_to @pin, notice: 'Pin was successfully updated!'
+      if @pin.user == current_user
+        if @pin.update(pin_params)
+          redirect_to @pin, notice: 'Pin was successfully updated!'
+        else
+          render 'edit'
+        end
       else
-        render 'edit'
+        redirect_to root_path, notice: 'Access denied'
       end
     end
 
     def destroy
-      @pin.destroy
-      redirect_to root_path
+      if @pin.user == current_user
+        @pin.destroy
+        redirect_to root_path
+      else
+        redirect_to root_path, notice: 'Access denied'
+      end
     end
-  end
 
   def upvote
     @pin.upvote_by current_user
